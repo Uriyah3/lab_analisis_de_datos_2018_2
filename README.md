@@ -1,1 +1,1 @@
-"# lab_analisis_de_datos_2018_2" 
+# Laboratorio Análisis de Datos USACH 2018 - 2
