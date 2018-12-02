@@ -2,7 +2,7 @@
 #_______Departamento de Ingeniería en Informática______________
 #__________________Análisis de Datos___________________________
 #
-# Laboratorio 1: Análisis estadístico
+# Laboratorio 2: Análisis estadístico
 # Integrantes: Nicolás Mariangel | Juan Pablo Rojas
 # Profesor: Max Chacón
 # Ayudante: Ignacio Ibáñez Aliaga
@@ -84,12 +84,11 @@ allhypo <- transform(allhypo, FTI = as.numeric(FTI))
 #TO DO
 
 # Eliminar los valores atípicos
-sdRange <- 4
+sdRange <- 3
 TSHMax <- mean(allhypo$TSH) + sdRange * sd(allhypo$TSH)
 T3Max <- mean(allhypo$T3) + sdRange * sd(allhypo$T3)
 TT4Max <- mean(allhypo$TT4) + sdRange * sd(allhypo$TT4)
 T4UMax <- mean(allhypo$T4U) + sdRange * sd(allhypo$T4U)
 FTIMax <- mean(allhypo$FTI) + sdRange * sd(allhypo$FTI)
-allhypo2 <- subset(allhypo , (age <= 120) & (TSH <= TSHMax) & (T3 <= T3Max) & (
-  TT4 <= TT4Max) & (T4U <= T4UMax) & ( FTI <= FTIMax) )
+allhypo2 <- subset(allhypo , (age <= 120) & (TSH <= TSHMax) & (T3 <= T3Max) & (TT4 <= TT4Max) & (T4U <= T4UMax) & ( FTI <= FTIMax) )
 
