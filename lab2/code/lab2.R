@@ -10,8 +10,7 @@
 # http://archive.ics.uci.edu/ml/datasets/Thyroid+Disease
 
 library(readr)
-library(ggplot2)
-library(VIM)
+library(cluster)
 
 # Lectura de los datos + asignarle nombres a las columnas de acuerdo a lo escrito en allhypo.names
 allhypo <- read_csv("allhypo/allhypo.data", col_names = FALSE)
@@ -28,22 +27,22 @@ lostFTI <- length(allhypo$FTI[allhypo$FTI == '?']) + length(allhypo$FTI[allhypo$
 lostTBG <- length(allhypo$TBG[allhypo$TBG == '?']) + length(allhypo$TBG[allhypo$TBG == 'NA'])
 
 # Calcular el porcentaje de perdida por cada variable con datos incompletos
-lostsexPercentage <- lostsex / 2800 * 100
-lostTSHPercentage <- lostTSH / 2800 * 100
-lostT3Percentage <- lostT3 / 2800 * 100
-lostTT4Percentage <- lostTT4 / 2800 * 100
-lostT4UPercentage <- lostT4U / 2800 * 100
-lostFTIPercentage <- lostFTI / 2800 * 100
-lostTBGPercentage <- lostTBG / 2800 * 100
+percentageLostsex <- lostsex / 2800 * 100
+percentageLostTSH <- lostTSH / 2800 * 100
+percentageLostT3 <- lostT3 / 2800 * 100
+percentageLostTT4 <- lostTT4 / 2800 * 100
+percentageLostT4U <- lostT4U / 2800 * 100
+percentageLostFTI <- lostFTI / 2800 * 100
+percentageLostTBG <- lostTBG / 2800 * 100
 
 # Mostrar en pantalla los datos de perdida
-cat("El número de incidencias para la variable sex es", lostsex, "con un % de perdida de:", lostsexPercentage, "\n")
-cat("El número de incidencias para la variable TSH es", lostTSH, "con un % de perdida de:", lostTSHPercentage, "\n")
-cat("El número de incidencias para la variable T3 es", lostT3, "con un % de perdida de:", lostT3Percentage, "\n")
-cat("El número de incidencias para la variable TT4 es", lostTT4, "con un % de perdida de:", lostTT4Percentage, "\n")
-cat("El número de incidencias para la variable T4U es", lostT4U, "con un % de perdida de:", lostT4UPercentage, "\n")
-cat("El número de incidencias para la variable FTI es", lostFTI, "con un % de perdida de:", lostFTIPercentage, "\n")
-cat("El número de incidencias para la variable TBG es", lostTBG, "con un % de perdida de:", lostTBGPercentage, "\n")
+cat("El número de incidencias para la variable sex es", lostsex, "con un % de perdida de:", percentageLostsex, "\n")
+cat("El número de incidencias para la variable TSH es", lostTSH, "con un % de perdida de:", percentageLostTSH, "\n")
+cat("El número de incidencias para la variable T3 es", lostT3, "con un % de perdida de:", percentageLostT3, "\n")
+cat("El número de incidencias para la variable TT4 es", lostTT4, "con un % de perdida de:", percentageLostTT4, "\n")
+cat("El número de incidencias para la variable T4U es", lostT4U, "con un % de perdida de:", percentageLostT4U, "\n")
+cat("El número de incidencias para la variable FTI es", lostFTI, "con un % de perdida de:", percentageLostFTI, "\n")
+cat("El número de incidencias para la variable TBG es", lostTBG, "con un % de perdida de:", percentageLostTBG, "\n")
 
 # Limpieza de los resultados (no se usa el ".|numero" solo interesa la clase)
 allhypo$results <- vapply(strsplit(allhypo$results,"\\."), `[`, 1, FUN.VALUE=character(1))
@@ -81,14 +80,14 @@ allhypo <- transform(allhypo, T4U = as.numeric(T4U))
 allhypo <- transform(allhypo, FTI = as.numeric(FTI))
 
 # Transformar todas las columnas booleanas a factores
-#TO DO
+allhypo <- transform(allhypo)
 
 # Eliminar los valores atípicos
 sdRange <- 3
-TSHMax <- mean(allhypo$TSH) + sdRange * sd(allhypo$TSH)
-T3Max <- mean(allhypo$T3) + sdRange * sd(allhypo$T3)
-TT4Max <- mean(allhypo$TT4) + sdRange * sd(allhypo$TT4)
-T4UMax <- mean(allhypo$T4U) + sdRange * sd(allhypo$T4U)
-FTIMax <- mean(allhypo$FTI) + sdRange * sd(allhypo$FTI)
-allhypo2 <- subset(allhypo , (age <= 120) & (TSH <= TSHMax) & (T3 <= T3Max) & (TT4 <= TT4Max) & (T4U <= T4UMax) & ( FTI <= FTIMax) )
+MaxTSH <- mean(allhypo$TSH) + sdRange * sd(allhypo$TSH)
+MaxT3 <- mean(allhypo$T3) + sdRange * sd(allhypo$T3)
+MaxTT4 <- mean(allhypo$TT4) + sdRange * sd(allhypo$TT4)
+MaxT4U <- mean(allhypo$T4U) + sdRange * sd(allhypo$T4U)
+MaxFTI <- mean(allhypo$FTI) + sdRange * sd(allhypo$FTI)
+allhypo <- subset(allhypo , (age <= 120) & (TSH <= MaxTSH) & (T3 <= MaxT3) & (TT4 <= MaxTT4) & (T4U <= MaxT4U) & ( FTI <= MaxFTI) )
 
