@@ -11,6 +11,8 @@
 
 library(readr)
 library(cluster)
+library(ggplot2)
+library(Rtsne)
 
 # Lectura de los datos + asignarle nombres a las columnas de acuerdo a lo escrito en allhypo.names
 allhypo <- read_csv("allhypo/allhypo.data", col_names = FALSE)
@@ -68,7 +70,7 @@ allhypo$`TT4 measured` <- NULL
 allhypo$`FTI measured` <- NULL
 
 # Eliminar referral.source y results por las razones mencionandas en este informe
-allhypo$referral.source <- NULL
+allhypo$`referral source` <- NULL
 allhypo$results <- NULL
 
 # Transformar todas las columnas numéricas a variables numéricas.
@@ -80,7 +82,21 @@ allhypo <- transform(allhypo, T4U = as.numeric(T4U))
 allhypo <- transform(allhypo, FTI = as.numeric(FTI))
 
 # Transformar todas las columnas booleanas a factores
-allhypo <- transform(allhypo)
+allhypo <- transform(allhypo, sex = as.factor(sex))
+allhypo <- transform(allhypo, on.thyroxine = as.factor(on.thyroxine))
+allhypo <- transform(allhypo, query.on.thyroxine = as.factor(query.on.thyroxine))
+allhypo <- transform(allhypo, on.antithyroid.medication = as.factor(on.antithyroid.medication))
+allhypo <- transform(allhypo, sick = as.factor(sick))
+allhypo <- transform(allhypo, pregnant = as.factor(pregnant))
+allhypo <- transform(allhypo, thyroid.surgery = as.factor(thyroid.surgery))
+allhypo <- transform(allhypo, I131.treatment = as.factor(I131.treatment))
+allhypo <- transform(allhypo, query.hypothyroid = as.factor(query.hypothyroid))
+allhypo <- transform(allhypo, query.hyperthyroid = as.factor(query.hyperthyroid))
+allhypo <- transform(allhypo, lithium = as.factor(lithium))
+allhypo <- transform(allhypo, goitre = as.factor(goitre))
+allhypo <- transform(allhypo, tumor = as.factor(tumor))
+allhypo <- transform(allhypo, hypopituitary = as.factor(hypopituitary))
+allhypo <- transform(allhypo, psych = as.factor(psych))
 
 # Eliminar los valores atípicos
 sdRange <- 3
@@ -90,4 +106,43 @@ MaxTT4 <- mean(allhypo$TT4) + sdRange * sd(allhypo$TT4)
 MaxT4U <- mean(allhypo$T4U) + sdRange * sd(allhypo$T4U)
 MaxFTI <- mean(allhypo$FTI) + sdRange * sd(allhypo$FTI)
 allhypo <- subset(allhypo , (age <= 120) & (TSH <= MaxTSH) & (T3 <= MaxT3) & (TT4 <= MaxTT4) & (T4U <= MaxT4U) & ( FTI <= MaxFTI) )
+
+# Calcular distancias de gower
+allhypoDistances <- daisy(allhypo, metric="gower")
+
+# Usar el metodo de las siluetas para obtener la cantidad optima de clusters
+k.max <- 10
+k.vector <- 2:k.max
+silAvgWidth <- unlist(sapply(k.vector, function(k.cluster){pam(allhypoDistances, diss = TRUE, k = k.cluster)$silinfo$avg.width}))
+
+clustersPlot <- ggplot(data.frame(k.vector, silAvgWidth), aes(x = k.vector, y = silAvgWidth)) +
+  labs(x = "N° de Clusters", y = "Coeficiente de Silueta (ancho)") +
+  geom_line(color = "#777777") +
+  geom_point(color = "black") +
+  theme_bw() +
+  ggtitle("N° clusters vs ancho Silueta") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_vline(xintercept = 3, linetype = 2, color="#666666")
+show(clustersPlot)
+
+# Por medio del metodo de siluetas, la agrupación optima es con k=3 clusters
+clusters <- pam(allhypoDistances, diss = TRUE, k = 3)
+
+# Mostrar información/resumen de los datos de cada cluster
+allhypo["cluster"] <- clusters$clustering
+cat("Resumen de datos para el cluster 1 \n")
+show(summary(allhypo[allhypo$cluster == 1, ]))
+cat("Resumen de datos para el cluster 2 \n")
+show(summary(allhypo[allhypo$cluster == 2, ]))
+cat("Resumen de datos para el cluster 3 \n")
+show(summary(allhypo[allhypo$cluster == 3, ]))
+
+# Para poder graficar los datos en dos dimensiones se utiliza t-SNE
+set.seed(6748)
+tsne <- Rtsne(allhypoDistances, is_distance = TRUE)
+groupingPlot <- ggplot(data.frame(tsne$Y), aes(x = X1, y = X2)) +
+  labs(x = "X", y = "Y") +
+  geom_point(color = factor(clusters$clustering))
+show(groupingPlot)
+
 
