@@ -130,10 +130,13 @@ clusters <- pam(allhypoDistances, diss = TRUE, k = 3)
 
 # Mostrar información/resumen de los datos de cada cluster
 allhypo["cluster"] <- clusters$clustering
+cat("-----------------------------------------------------------------\n")
 cat("Resumen de datos para el cluster 1 \n")
 show(summary(allhypo[allhypo$cluster == 1, ]))
+cat("-----------------------------------------------------------------\n")
 cat("Resumen de datos para el cluster 2 \n")
 show(summary(allhypo[allhypo$cluster == 2, ]))
+cat("-----------------------------------------------------------------\n")
 cat("Resumen de datos para el cluster 3 \n")
 show(summary(allhypo[allhypo$cluster == 3, ]))
 
