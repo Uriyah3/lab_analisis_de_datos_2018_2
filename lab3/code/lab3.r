@@ -78,14 +78,14 @@ TT4.min <- 64.0
 T4U.min <- 0.7
 FTI.min <- 33.108
 
-#max values
+# Definicion de valores maximos
 TSH.max <- 4.0
 T3.max <- 3.37
 TT4.max <- 154.0
 T4U.max <- 1.8
 FTI.max <- 135.191
 
-#vectors(zeros)
+# Crear vectores con valores 0 para iniciar con la transformación a valores booleanos (0 o 1)
 allhypo$child <- integer(length(allhypo[[1]]))
 allhypo$adult <- integer(length(allhypo[[1]]))
 allhypo$old <- integer(length(allhypo[[1]]))
@@ -106,6 +106,7 @@ allhypo$T4U.high <- integer(length(allhypo[[1]]))
 allhypo$FTI.high <- integer(length(allhypo[[1]]))
 
 # Usar los rangos para transformar las variables continuas en "booleanas"
+# Entregando valores 1 a los vectores recien creados cuando corresponda
 for(i in 1:length(allhypo[[1]])){
   
   if(allhypo$age[i] < age.adult){
@@ -183,7 +184,8 @@ allhypo <- transform(allhypo, FTI.high = as.factor(FTI.high))
 allhypo$results <- as.factor(allhypo$results)
 names(allhypo)[names(allhypo) == "results"] <- "hypothyroid"
 
-#rules without restrictions, with min 2 antecedents and 1 consecuent [support=0.5, Confidence=0.8]
+# Obtener las reglas que sean de largo 2 minimo y largo 5 maximo, teniendo minimo soporte de 0.01
+# y confianza minima de 0.5
 rules <- apriori(allhypo, parameter = list(minlen=2, support=0.01, confidence=0.5, maxlen=5), appearance = list(rhs=c("hypothyroid=1"), default="lhs"))
 
 # Revisar las mejores reglas segun lift
