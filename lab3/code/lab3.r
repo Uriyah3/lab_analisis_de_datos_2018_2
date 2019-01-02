@@ -44,6 +44,14 @@ allhypo$`FTI measured` <- NULL
 # Eliminar referral.source porque no entrega información relevante.
 allhypo$`referral source` <- NULL
 
+# Transformar todas las columnas numéricas a variables numéricas.
+allhypo <- transform(allhypo, age = as.numeric(age))
+allhypo <- transform(allhypo, TSH = as.numeric(TSH))
+allhypo <- transform(allhypo, T3 = as.numeric(T3))
+allhypo <- transform(allhypo, TT4 = as.numeric(TT4))
+allhypo <- transform(allhypo, T4U = as.numeric(T4U))
+allhypo <- transform(allhypo, FTI = as.numeric(FTI))
+
 # Transformar todas las columnas booleanas a factores
 allhypo <- transform(allhypo, sex = as.factor(sex))
 allhypo <- transform(allhypo, on.thyroxine = as.factor(on.thyroxine))
@@ -109,9 +117,9 @@ for(i in 1:length(allhypo[[1]])){
   
   if(allhypo$age[i] < age.adult){
     allhypo$child[i] <- 1
-  }else if(allhypo$age[i] >= age.adult & allhypo$age[i] < age.adult){
+  }else if(allhypo$age[i] >= age.adult & allhypo$age[i] < age.old){
     allhypo$adult[i] <- 1
-  }else if(allhypo$age[i] >= age.adult){
+  }else if(allhypo$age[i] >= age.old){
     allhypo$old[i] <- 1
   }
   
@@ -120,35 +128,35 @@ for(i in 1:length(allhypo[[1]])){
   }else if(allhypo$TSH[i] <= TSH.min){
     allhypo$TSH.low[i] <- 1
   } else {
-    allhypo$TSH.normal <- 1
+    allhypo$TSH.normal[i] <- 1
   }
   if(allhypo$T3[i] >= T3.max){
     allhypo$T3.high[i] <- 1
   }else if(allhypo$T3[i] <= T3.min){
     allhypo$T3.low[i] <- 1
   } else {
-    allhypo$T3.normal <- 1
+    allhypo$T3.normal[i] <- 1
   }
   if(allhypo$TT4[i] >= TT4.max){
     allhypo$TT4.high[i] <- 1
   }else if(allhypo$TT4[i] <= TT4.min){
     allhypo$TT4.low[i] <- 1
   } else {
-    allhypo$TT4.normal <- 1
+    allhypo$TT4.normal[i] <- 1
   }
   if(allhypo$T4U[i] >= T4U.max){
     allhypo$T4U.high[i] <- 1
   }else if(allhypo$T4U[i] <= T4U.min){
     allhypo$T4U.low[i] <- 1
   } else {
-    allhypo$T4U.normal <- 1
+    allhypo$T4U.normal[i] <- 1
   }
   if(allhypo$FTI[i] >= FTI.max){
     allhypo$FTI.high[i] <- 1
   }else if(allhypo$FTI[i] <= FTI.min){
     allhypo$FTI.low[i] <- 1
   } else {
-    allhypo$FTI.normal <- 1
+    allhypo$FTI.normal[i] <- 1
   }
 }
 
@@ -187,9 +195,16 @@ names(allhypo)[names(allhypo) == "results"] <- "hypothyroid"
 # de hipotiroides
 rules <- apriori(allhypo, parameter = list(minlen=2, support=0.01, confidence=0.5, maxlen=6), appearance = list(rhs=c("hypothyroid=1"), default="lhs"))
 
+# Graficar las reglas
+plot(rules)
+
+# Se analizan solo las reglas que tengan un largo máximo de 5 elementos.
+rules <- apriori(allhypo, parameter = list(minlen=2, support=0.01, confidence=0.5, maxlen=5), appearance = list(rhs=c("hypothyroid=1"), default="lhs"))
+
 # Revisar las mejores reglas segun lift
 inspect(head(rules, n = 40, by ="lift"))
 
 # Graficar las reglas
 plot(rules)
+
 
