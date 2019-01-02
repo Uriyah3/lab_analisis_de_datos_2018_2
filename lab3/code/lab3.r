@@ -184,9 +184,10 @@ allhypo <- transform(allhypo, FTI.high = as.factor(FTI.high))
 allhypo$results <- as.factor(allhypo$results)
 names(allhypo)[names(allhypo) == "results"] <- "hypothyroid"
 
-# Obtener las reglas que sean de largo 2 minimo y largo 5 maximo, teniendo minimo soporte de 0.01
-# y confianza minima de 0.5
-rules <- apriori(allhypo, parameter = list(minlen=2, support=0.01, confidence=0.5, maxlen=5), appearance = list(rhs=c("hypothyroid=1"), default="lhs"))
+# Obtener las reglas que sean de largo 2 minimo y largo 8 maximo, teniendo minimo soporte de 0.01
+# y confianza minima de 0.5, se busca encontrar reglas que indiquen que atributos llevan a padecer
+# de hipotiroides
+rules <- apriori(allhypo, parameter = list(minlen=2, support=0.01, confidence=0.5, maxlen=8), appearance = list(rhs=c("hypothyroid=1"), default="lhs"))
 
 # Revisar las mejores reglas segun lift
 inspect(head(rules, n = 40, by ="lift"))
