@@ -193,10 +193,10 @@ names(allhypo)[names(allhypo) == "results"] <- "hypothyroid"
 # Obtener las reglas que sean de largo 2 minimo y largo 6 maximo, teniendo minimo soporte de 0.01
 # y confianza minima de 0.5, se busca encontrar reglas que indiquen que atributos llevan a padecer
 # de hipotiroides
-rules <- apriori(allhypo, parameter = list(minlen=2, support=0.01, confidence=0.5, maxlen=6), appearance = list(rhs=c("hypothyroid=1"), default="lhs"))
+#rules <- apriori(allhypo, parameter = list(minlen=2, support=0.01, confidence=0.5, maxlen=6), appearance = list(rhs=c("hypothyroid=1"), default="lhs"))
 
 # Graficar las reglas
-plot(rules)
+#plot(rules)
 
 # Se analizan solo las reglas que tengan un largo máximo de 5 elementos.
 rules <- apriori(allhypo, parameter = list(minlen=2, support=0.01, confidence=0.5, maxlen=5), appearance = list(rhs=c("hypothyroid=1"), default="lhs"))
