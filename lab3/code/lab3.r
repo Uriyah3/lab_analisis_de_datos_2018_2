@@ -2,7 +2,7 @@
 #_______Departamento de Ingeniería en Informática______________
 #__________________Análisis de Datos___________________________
 #
-# Laboratorio 2: Reglas de asociación
+# Laboratorio 3: Reglas de asociación
 # Integrantes: Nicolás Mariangel | Juan Pablo Rojas
 # Profesor: Max Chacón
 # Ayudante: Ignacio Ibáñez Aliaga
