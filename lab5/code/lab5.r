@@ -196,8 +196,14 @@ data <- preprocessing(allhypo_raw)
 data_tree <- subset(data, select = -hypothyroid)
 
 # Obtener el modelo
-model <-C5.0(data_tree, data$hypothyroid)
+model <- C5.0(data_tree, data$hypothyroid)
+model.rules <- C5.0(data_tree, data$hypothyroid, rules=TRUE)
 
 # Mostrar árbol
 tree <- plot(model)
+
+# Mostrar resumen de los modelos obtenidos
+show(summary(model))
+cat("\n\n---------------------------------------------------------------------------\n\n")
+show(summary(model.rules))
 
